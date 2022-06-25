@@ -5,10 +5,14 @@ import {
 	signInWithEmailAndPassword,
 } from 'firebase/auth'
 import { getDatabase, push, ref, set } from 'firebase/database'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { userInfo } from 'os'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { UserAuth } from '../../components/Context/Context'
 import LayoutApp from '../../components/Layout'
+import { userLogin } from '../../core/store/projectSlice'
+import { RootState } from '../../core/store/store'
 import { Authorization } from './Authorization'
 import { Registration } from './Registration'
 
@@ -19,13 +23,21 @@ export const Auth = () => {
 	const auth = getAuth()
 	let navigate = useNavigate()
 	const database = getDatabase()
+	const location = useLocation()
 	const { user } = UserAuth()
+	const dispatch = useDispatch()
 
 	const [username, setUsername] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [sex, setSex] = useState('')
 	const [current, setCurrent] = useState(0)
+
+	// const userState = useSelector(
+	// 	(state: RootState) => state.ProjectSlice.UserLogin
+	// )
+
+	// if (userState === true) navigate('/profile')
 
 	// Registration
 	const writeUserData = (name: string, sex_user: string) => {
@@ -38,7 +50,8 @@ export const Auth = () => {
 				sex: sex_user,
 			})
 			openNotificationWithIcon('success', 'Success', 'Second point')
-			navigate('/profile', { replace: true })
+			// dispatch(userLogin(true))
+			// navigate('/profile')
 		} catch (err) {
 			console.log(err)
 		}
@@ -76,7 +89,8 @@ export const Auth = () => {
 		signInWithEmailAndPassword(auth, email, password)
 			.then(userCredential => {
 				openNotificationWithIcon('success', 'Success', '')
-				navigate('/profile', { replace: true })
+				// dispatch(userLogin(true))
+				// navigate('/profile', { replace: true })
 			})
 			.catch(error => {
 				const errorCode = error.code
@@ -101,6 +115,10 @@ export const Auth = () => {
 			message: title,
 			description: text,
 		})
+	}
+
+	if (user) {
+		return <Navigate to='/profile' state={{ from: location }} />
 	}
 
 	return (

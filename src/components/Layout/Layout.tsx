@@ -3,8 +3,20 @@ import {
 	ShareAltOutlined,
 	UserOutlined,
 } from '@ant-design/icons'
-import { Avatar, Breadcrumb, Button, Drawer, Layout } from 'antd'
-import { FC, useState } from 'react'
+import {
+	Avatar,
+	Breadcrumb,
+	Button,
+	Descriptions,
+	Drawer,
+	Layout,
+	PageHeader,
+} from 'antd'
+import { FC, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { userLogin } from '../../core/store/projectSlice'
+import { RootState } from '../../core/store/store'
 import { UserAuth } from '../Context/Context'
 import './Layout.less'
 
@@ -16,14 +28,29 @@ interface LayoutAppProps {
 
 const LayoutApp: FC<LayoutAppProps> = ({ children }) => {
 	const { user, logOut } = UserAuth()
+	const dispatch = useDispatch()
+	let navigate = useNavigate()
+	const location = useLocation()
+
+	const userState = useSelector(
+		(state: RootState) => state.ProjectSlice.UserLogin
+	)
 
 	const handleSignOut = async () => {
 		try {
 			await logOut()
+			return <Navigate to='/' state={{ from: location }} />
+			// await dispatch(userLogin(false))
+			// await navigate('/')
 		} catch (err) {
 			console.log(err)
 		}
 	}
+
+	// useEffect(() => {
+	// 	if (user != null) dispatch(userLogin(true))
+	// 	if (userState === false) navigate('/')
+	// }, [])
 
 	const [visible, setVisible] = useState(false)
 
@@ -37,7 +64,7 @@ const LayoutApp: FC<LayoutAppProps> = ({ children }) => {
 
 	return (
 		<Layout
-			style={{ minHeight: '100vh' }}
+			style={{ minHeight: '100vh', paddingBottom: '16px' }}
 			className='site-drawer-render-in-current-wrapper'
 		>
 			<Header
@@ -71,14 +98,30 @@ const LayoutApp: FC<LayoutAppProps> = ({ children }) => {
 				</div>
 			</Header>
 			<Content className='site-layout'>
-				<Breadcrumb style={{ margin: '16px' }}>
-					{/* <Breadcrumb.Item>Home</Breadcrumb.Item>
-					<Breadcrumb.Item>List</Breadcrumb.Item>
-					<Breadcrumb.Item>App</Breadcrumb.Item> */}
-				</Breadcrumb>
+				{userState === true && (
+					<div
+						className='site-page-header-ghost-wrapper'
+						style={{ marginTop: '16px' }}
+					>
+						<PageHeader
+							ghost={false}
+							onBack={() => window.history.back()}
+							title='Title'
+							subTitle='This is a subtitle'
+							extra={[
+								<Button key='3'>Operation</Button>,
+								<Button key='2'>Operation</Button>,
+								<Button key='1' type='primary'>
+									Primary
+								</Button>,
+							]}
+						></PageHeader>
+					</div>
+				)}
+
 				<div
 					className='site-layout-background'
-					style={{ padding: 24, minHeight: 380 }}
+					style={{ padding: 24, minHeight: 380, marginTop: '16px' }}
 				>
 					{children}
 				</div>

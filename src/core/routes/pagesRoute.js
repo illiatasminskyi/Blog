@@ -4,7 +4,7 @@ import { Profile } from '../../pages/Profile/Profile'
 import { MyFriends } from '../../pages/MyFriends/MyFriends'
 
 export const pRouter = [
-	{ path: '/', element: <Auth /> },
+	// { path: '/', element: <Auth /> },
 	{ path: '/home', element: <Home /> },
 	{ path: '/profile', element: <Profile /> },
 	{ path: '/my-friends', element: <MyFriends /> },
